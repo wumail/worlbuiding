@@ -162,20 +162,18 @@ export default function App() {
                         <InfoCard label="Next Align." value={`Day ${nextConjunction}`} />
                     </div>
 
-                    {/* Calendar View (Compact on large screens if needed, but we keep full width of col) */}
+                    {/* Calendar View */}
                     <CalendarView currentDay={currentDay} onDaySelect={setCurrentDay} isLeapYear={isLeapYear} />
                     
-                    {/* Environmental Chart */}
-                    <EnvironmentalChart currentDay={currentDay} />
                 </div>
 
                 {/* Right Column: Visuals (Spans 2 cols on wide screens) */}
-                <div className="xl:col-span-2">
+                <div className="xl:col-span-2 space-y-6">
                     {/* Grid Container for Automatic Line Wrapping of Visual Modules */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
                         {/* Module 1: System Map - Magnified */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center md:col-span-2">
+                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center md:col-span-2 overflow-hidden">
                             <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
                                 <IconGlobe width={16} /> Helio-System
                             </h2>
@@ -183,7 +181,7 @@ export default function App() {
                         </div>
 
                         {/* Module 2: Planet Surface - Enhanced */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center">
+                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
                              <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
                                 <IconClock width={16} /> Terrax Rotation
                              </h2>
@@ -194,7 +192,7 @@ export default function App() {
                         </div>
 
                         {/* Module 3: Moons */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center">
+                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
                             <h2 className="text-sm font-bold text-white w-full mb-2 uppercase tracking-wider border-b border-slate-700 pb-2">Lunar System</h2>
                             <PlanetaryOrrery currentDay={currentDay} />
                             <div className="w-full space-y-2 mt-4">
@@ -213,8 +211,8 @@ export default function App() {
                             </div>
                         </div>
 
-                         {/* Module 4: Planetary Observations (New) */}
-                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2">
+                         {/* Module 4: Planetary Observations */}
+                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2 overflow-x-auto">
                             <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider border-b border-slate-700 pb-2 flex items-center gap-2">
                                 <IconTelescope width={16} /> Observatory
                             </h2>
@@ -222,6 +220,11 @@ export default function App() {
                             <div className="text-[10px] text-slate-500 mt-2 italic">
                                 *Brightness calc based on Albedo & Distance relative to Terrax.
                             </div>
+                        </div>
+
+                        {/* Module 5: Environmental Chart (Widened by placement) */}
+                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2">
+                            <EnvironmentalChart currentDay={currentDay} />
                         </div>
 
                     </div>
