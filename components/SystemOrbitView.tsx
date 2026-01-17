@@ -1,32 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { TERRAX_SYSTEM } from '../constants';
 
 interface SystemOrbitViewProps {
-    currentDay: number; // Prop remains for interface compatibility but is no longer the primary driver
+    simTime: number; 
 }
 
-export const SystemOrbitView: React.FC<SystemOrbitViewProps> = () => {
+export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ simTime }) => {
     // Canvas size
     const size = 500;
     const center = size / 2;
     const sunRadius = 18;
-
-    // Internal simulation time that does not wrap at 513 days
-    const [simTime, setSimTime] = useState(0);
-    const lastTickRef = useRef<number>(performance.now());
-
-    useEffect(() => {
-        let frameId: number;
-        const tick = (now: number) => {
-            const dt = (now - lastTickRef.current) / 1000;
-            lastTickRef.current = now;
-            // Speed factor: 1 real second = 5 simulation days
-            setSimTime(prev => prev + dt * 5);
-            frameId = requestAnimationFrame(tick);
-        };
-        frameId = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(frameId);
-    }, []);
 
     const scaleOrbit = (au: number) => {
         const minAu = 0.2; 

@@ -2,19 +2,19 @@ import React from 'react';
 import { TERRAX_SYSTEM } from '../constants';
 
 interface ObservationDeckProps {
-    currentDay: number;
+    simTime: number;
 }
 
-export const ObservationDeck: React.FC<ObservationDeckProps> = ({ currentDay }) => {
+export const ObservationDeck: React.FC<ObservationDeckProps> = ({ simTime }) => {
     // Terrax Dynamics
     const tPeriod = TERRAX_SYSTEM.planet.orbitalPeriodLocalDays * (TERRAX_SYSTEM.planet.rotationPeriodHours / 24); // in Earth Days
-    const tAngle = ((currentDay / tPeriod) * 2 * Math.PI); // Angle in orbit
+    const tAngle = ((simTime / tPeriod) * 2 * Math.PI); // Use simTime instead of currentDay
     const tRad = TERRAX_SYSTEM.planet.semiMajorAxisAU;
 
     const observations = TERRAX_SYSTEM.neighbors.map(planet => {
         // Planet Dynamics
         const pPeriod = planet.orbitalPeriodDays;
-        const pAngle = ((currentDay / pPeriod) * 2 * Math.PI);
+        const pAngle = ((simTime / pPeriod) * 2 * Math.PI);
         const pRad = planet.semiMajorAxisAU;
 
         // Coordinates (Sun at 0,0)
