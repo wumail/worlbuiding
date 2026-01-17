@@ -9,13 +9,13 @@ export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ simTime }) => 
     // Canvas size
     const size = 500;
     const center = size / 2;
-    const sunRadius = 18;
+    // Requirement 2: Reduced Sun radius to prevent overlap
+    const sunRadius = 10;
 
+    // Improved scaling logic to handle inner system better
     const scaleOrbit = (au: number) => {
-        const minAu = 0.2; 
-        const maxLog = Math.log(35); 
-        const availRadius = (size / 2) - 40; 
-        return (Math.log(au + minAu) / maxLog) * availRadius + 25; 
+        // Power scale (au^0.4) provides better spacing for both inner rocky and outer giants
+        return Math.pow(au, 0.4) * 60 + 25;
     };
 
     const getPlanetPos = (au: number, periodDays: number, time: number) => {
@@ -41,11 +41,13 @@ export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ simTime }) => 
         <div className="flex flex-col items-center w-full overflow-hidden">
             <div className="relative" style={{ width: size, height: size }}>
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                    <circle cx={center} cy={center} r={sunRadius} fill="#fbbf24" filter="drop-shadow(0 0 20px rgba(251, 191, 36, 0.7))" />
+                    {/* Sun */}
+                    <circle cx={center} cy={center} r={sunRadius} fill="#fbbf24" filter="drop-shadow(0 0 12px rgba(251, 191, 36, 0.6))" />
                     
+                    {/* Neighbor Orbits and Planets */}
                     {neighborPositions.map((p) => (
                         <g key={p.name}>
-                            <circle cx={center} cy={center} r={p.pos.r} fill="none" stroke="#334155" strokeWidth="1" opacity="0.3" strokeDasharray="3 3"/>
+                            <circle cx={center} cy={center} r={p.pos.r} fill="none" stroke="#334155" strokeWidth="1" opacity="0.2" strokeDasharray="3 3"/>
                             <circle 
                                 cx={p.pos.x} 
                                 cy={p.pos.y} 
@@ -55,19 +57,20 @@ export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ simTime }) => 
                                 strokeWidth="1"
                             />
                             {['Jove', 'Saturnus'].includes(p.name.split(' ')[0]) && (
-                                <text x={p.pos.x + 10} y={p.pos.y} fontSize="11" fill={p.color} opacity="0.8" fontWeight="bold">{p.name[0]}</text>
+                                <text x={p.pos.x + 10} y={p.pos.y} fontSize="11" fill={p.color} opacity="0.6" fontWeight="bold">{p.name[0]}</text>
                             )}
                         </g>
                     ))}
 
-                    <circle cx={center} cy={center} r={terraxPos.r} fill="none" stroke="#45a29e" strokeWidth="2" opacity="0.5" />
+                    {/* Terrax Orbit and Planet */}
+                    <circle cx={center} cy={center} r={terraxPos.r} fill="none" stroke="#45a29e" strokeWidth="1.5" opacity="0.4" />
                     <circle cx={terraxPos.x} cy={terraxPos.y} r={6} fill="#22d3ee" stroke="#fff" strokeWidth="1.5" />
                     <text x={terraxPos.x + 10} y={terraxPos.y} fontSize="12" fill="#22d3ee" fontWeight="bold">Terrax</text>
                     
-                    <text x={center} y={size - 10} textAnchor="middle" fill="#475569" fontSize="10">Independent Real-Time Simulation</text>
+                    <text x={center} y={size - 10} textAnchor="middle" fill="#475569" fontSize="10" opacity="0.5">Independent Physical Orrery</text>
                 </svg>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 mt-4 px-2 bg-slate-900/50 p-2 rounded-full border border-slate-800">
+            <div className="flex flex-wrap justify-center gap-3 mt-4 px-3 bg-slate-900/80 p-2 rounded-full border border-slate-700/50">
                 <span className="flex items-center text-[10px] text-slate-300 gap-1.5"><span className="w-2 h-2 rounded-full bg-cyan-400"></span>Terrax</span>
                 {neighborPositions.map(n => (
                     <span key={n.name} className="flex items-center text-[10px] text-slate-400 gap-1.5">

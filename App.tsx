@@ -18,22 +18,19 @@ const DEFAULT_LAYOUTS = {
     { i: 'rot', x: 0, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
     { i: 'lunar', x: 6, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
     { i: 'env', x: 0, y: 7, w: 12, h: 7, minW: 6, minH: 6 },
-    { i: 'helio', x: 0, y: 14, w: 6, h: 6, minW: 4, minH: 5 },
-    { i: 'obs', x: 6, y: 14, w: 6, h: 6, minW: 4, minH: 5 },
+    { i: 'system-monitor', x: 0, y: 14, w: 12, h: 12, minW: 8, minH: 8 },
   ],
   md: [
     { i: 'rot', x: 0, y: 0, w: 5, h: 7, minW: 4, minH: 6 },
     { i: 'lunar', x: 5, y: 0, w: 5, h: 7, minW: 4, minH: 6 },
     { i: 'env', x: 0, y: 7, w: 10, h: 7, minW: 6, minH: 6 },
-    { i: 'helio', x: 0, y: 14, w: 5, h: 6, minW: 4, minH: 5 },
-    { i: 'obs', x: 5, y: 14, w: 5, h: 6, minW: 4, minH: 5 },
+    { i: 'system-monitor', x: 0, y: 14, w: 10, h: 12, minW: 8, minH: 8 },
   ],
   sm: [
     { i: 'rot', x: 0, y: 0, w: 6, h: 6 },
     { i: 'lunar', x: 0, y: 6, w: 6, h: 6 },
     { i: 'env', x: 0, y: 12, w: 6, h: 7 },
-    { i: 'helio', x: 0, y: 19, w: 6, h: 6 },
-    { i: 'obs', x: 0, y: 25, w: 6, h: 6 },
+    { i: 'system-monitor', x: 0, y: 19, w: 6, h: 14 },
   ]
 };
 
@@ -45,7 +42,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'data'>('dashboard');
   
   // Animation/Simulation State
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [simSpeed, setSimSpeed] = useState<number>(1); 
   const [simTime, setSimTime] = useState<number>(0); // Shared orbital simulation clock
   const lastUpdateRef = useRef<number>(Date.now());
@@ -53,26 +50,25 @@ export default function App() {
   useEffect(() => {
     let frameId: number;
     const update = () => {
-      if (isPlaying) {
-        const now = Date.now();
-        const delta = (now - lastUpdateRef.current) / 1000; // in seconds
-        lastUpdateRef.current = now;
-        
-        const speedMultiplier = simSpeed * 5;
+      const now = Date.now();
+      const delta = (now - lastUpdateRef.current) / 1000; // in seconds
+      lastUpdateRef.current = now;
+      
+      const speedMultiplier = simSpeed * 5;
 
-        // Update Calendar Time
+      // Requirement: Deep Space Monitor (simTime) runs automatically/independently
+      setSimTime(prev => prev + (delta * speedMultiplier));
+
+      if (isPlaying) {
+        // Local Calendar/Rotation Time only updates if isPlaying is true
         setCurrentDay(prev => {
           const total = isLeapYear ? 512 : 513;
           let next = prev + (delta * speedMultiplier); 
           if (next > total) next = 1;
           return next;
         });
-
-        // Update Independent Orbital Time
-        setSimTime(prev => prev + (delta * speedMultiplier));
-      } else {
-        lastUpdateRef.current = Date.now();
       }
+      
       frameId = requestAnimationFrame(update);
     };
     frameId = requestAnimationFrame(update);
@@ -123,7 +119,7 @@ export default function App() {
                     <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                         TERRAX <span className="text-cyan-500 font-extralight tracking-widest">OBSERVER</span>
                     </h1>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em]">Authority: {METADATA.authority} • v1.5.1</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em]">Authority: {METADATA.authority} • v1.5.3</p>
                 </div>
             </div>
             
@@ -250,26 +246,32 @@ export default function App() {
                             <EnvironmentalChart currentDay={currentDay} isLeapYear={isLeapYear} latitude={latitude} onLatitudeChange={setLatitude} />
                         </div>
 
-                        <div key="helio" className="bg-[#1f2833]/60 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 flex flex-col overflow-hidden group">
+                        {/* Combined System Monitor: Helio + Long Range Scan */}
+                        <div key="system-monitor" className="bg-[#1f2833]/60 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 flex flex-col overflow-hidden group">
                             <div className="p-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/30 drag-handle cursor-move shrink-0">
                                 <h2 className="text-xs font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                                    <Globe size={14} className="text-cyan-400" /> Helio-System
+                                    <Telescope size={14} className="text-cyan-400" /> Deep Space Monitor
                                 </h2>
-                                <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-cyan-500 animate-pulse' : 'bg-slate-600'}`} />
+                                <div className="flex items-center gap-4">
+                                    <span className="text-[10px] text-slate-500 uppercase font-mono tracking-widest hidden sm:inline">Autonomous Orbital Tracking</span>
+                                    <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                                </div>
                             </div>
-                            <div className="flex-grow min-h-0 overflow-auto flex items-center justify-center p-4">
-                                <SystemOrbitView simTime={simTime} />
-                            </div>
-                        </div>
-
-                        <div key="obs" className="bg-[#1f2833]/60 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 flex flex-col overflow-hidden">
-                             <div className="p-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/30 drag-handle cursor-move shrink-0">
-                                <h2 className="text-xs font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                                    <Telescope size={14} className="text-indigo-400" /> Long-Range Scan
-                                </h2>
-                            </div>
-                            <div className="flex-grow min-h-0 overflow-auto p-4 scrollbar-thin">
-                                <ObservationDeck simTime={simTime} />
+                            <div className="flex-grow min-h-0 flex flex-col lg:flex-row p-4 gap-6 overflow-hidden">
+                                <div className="flex-1 min-h-0 flex items-center justify-center bg-slate-900/30 rounded-xl border border-slate-800/50 relative overflow-hidden">
+                                    <SystemOrbitView simTime={simTime} />
+                                    <div className="absolute top-4 left-4 pointer-events-none">
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Helio-System View</div>
+                                    </div>
+                                </div>
+                                <div className="flex-1 min-h-0 bg-slate-900/30 rounded-xl border border-slate-800/50 flex flex-col overflow-hidden">
+                                    <div className="p-4 border-b border-slate-800/50">
+                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Long-Range Scan Data</div>
+                                    </div>
+                                    <div className="flex-grow overflow-auto p-4 scrollbar-thin">
+                                        <ObservationDeck simTime={simTime} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
