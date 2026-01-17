@@ -83,7 +83,11 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({
                 </div>
                 
                 {onLatitudeChange && (
-                    <div className="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-800">
+                    <div 
+                        className="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-800 cursor-default"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                    >
                         <MapPin size={14} className="text-emerald-400" />
                         <span className="text-[10px] font-mono text-emerald-400 w-12">{latitude}°{latitude >= 0 ? 'N' : 'S'}</span>
                         <input 
