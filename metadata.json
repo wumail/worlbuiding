@@ -1,0 +1,5 @@
+{
+  "name": "Terrax System Observer",
+  "description": "A comprehensive interactive dashboard for the Terrax planetary system, visualizing orbital mechanics, the unique 13-month calendar, tidal resonance cycles, and atmospheric data based on the Worldbuilding Co-Author specifications.",
+  "requestFramePermissions": []
+}
