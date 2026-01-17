@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 import { TERRAX_SYSTEM, METADATA } from './constants';
 import { InfoCard } from './components/InfoCard';
 import { PlanetaryOrrery } from './components/PlanetaryOrrery';
@@ -8,16 +9,41 @@ import { MoonPhaseDisplay } from './components/MoonPhaseDisplay';
 import { SystemOrbitView } from './components/SystemOrbitView';
 import { PlanetRotationView } from './components/PlanetRotationView';
 import { ObservationDeck } from './components/ObservationDeck';
-import { BookOpen, AlertTriangle, Calendar, Activity, Globe, Anchor, Clock, Telescope, ToggleLeft, ToggleRight } from 'lucide-react'; 
+import { ToggleLeft, ToggleRight } from 'lucide-react'; 
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Simple Icon Components
 const IconGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
 const IconActivity = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>;
 const IconCalendar = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
-const IconAlert = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
-const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 const IconTelescope = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.536a.934.934 0 0 1 .702-1.108l6.18-1.318a.934.934 0 0 1 1.108.702l.537 2.536a.934.934 0 0 1-.702 1.108Z"/><path d="m13.482 10.622 3.746-1.591a.934.934 0 0 1 1.228.498l.635 1.517a.934.934 0 0 1-.498 1.228l-3.746 1.591"/><path d="M14.5 17.5 12 22l-2.5-4.5"/><path d="M7 22h10"/></svg>;
+
+// Layout Definition for Draggable Grid
+const DEFAULT_LAYOUTS = {
+  lg: [
+    { i: 'helio', x: 0, y: 0, w: 6, h: 4 },
+    { i: 'obs', x: 6, y: 0, w: 6, h: 4 },
+    { i: 'rot', x: 0, y: 4, w: 6, h: 5 },
+    { i: 'lunar', x: 6, y: 4, w: 6, h: 5 },
+    { i: 'env', x: 0, y: 9, w: 12, h: 5 },
+  ],
+  md: [
+    { i: 'helio', x: 0, y: 0, w: 5, h: 4 },
+    { i: 'obs', x: 5, y: 0, w: 5, h: 4 },
+    { i: 'rot', x: 0, y: 4, w: 5, h: 5 },
+    { i: 'lunar', x: 5, y: 4, w: 5, h: 5 },
+    { i: 'env', x: 0, y: 9, w: 10, h: 5 },
+  ],
+  sm: [
+    { i: 'helio', x: 0, y: 0, w: 6, h: 4 },
+    { i: 'obs', x: 0, y: 4, w: 6, h: 4 },
+    { i: 'rot', x: 0, y: 8, w: 6, h: 4 },
+    { i: 'lunar', x: 0, y: 12, w: 6, h: 4 },
+    { i: 'env', x: 0, y: 16, w: 6, h: 4 },
+  ]
+};
 
 export default function App() {
   const [currentDay, setCurrentDay] = useState<number>(1);
@@ -98,9 +124,9 @@ export default function App() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto">
         {activeTab === 'dashboard' ? (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
                 
-                {/* Left Column: Controls & Calendar */}
+                {/* Left Column: Controls & Calendar (Fixed, 1 Column) */}
                 <div className="xl:col-span-1 space-y-6">
                     
                     {/* Time Controls Panel */}
@@ -167,73 +193,82 @@ export default function App() {
                     
                 </div>
 
-                {/* Right Column: Visuals (Spans 2 cols on wide screens) */}
-                <div className="xl:col-span-2 space-y-6">
-                    {/* Grid Container for Automatic Line Wrapping of Visual Modules */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Right Column: Visuals (Spans 3 cols on wide screens) - DRAGGABLE AREA */}
+                <div className="xl:col-span-3">
+                    <ResponsiveGridLayout 
+                        className="layout" 
+                        layouts={DEFAULT_LAYOUTS}
+                        breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
+                        cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
+                        rowHeight={60}
+                        draggableHandle=".drag-handle"
+                        isResizable={true}
+                        isDraggable={true}
+                        margin={[16, 16]}
+                    >
                         
-                        {/* Row 1: Helio-System (Left) and Observatory (Right) */}
-                        
-                        {/* Module 1: System Map */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
-                            <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
-                                <IconGlobe width={16} /> Helio-System
-                            </h2>
-                            <SystemOrbitView currentDay={currentDay} />
+                        {/* HELIO-SYSTEM */}
+                        <div key="helio" className="bg-[#1f2833] rounded-xl shadow-lg border border-slate-700 flex flex-col overflow-hidden">
+                            <div className="p-2 border-b border-slate-700 flex items-center justify-between bg-slate-800/50 drag-handle cursor-move">
+                                <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <IconGlobe width={16} /> Helio-System
+                                </h2>
+                            </div>
+                            <div className="flex-grow flex items-center justify-center p-2 min-h-0 overflow-hidden">
+                                <SystemOrbitView currentDay={currentDay} />
+                            </div>
                         </div>
 
-                         {/* Module 4: Planetary Observations (Moved here) */}
-                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 overflow-x-auto flex flex-col">
-                            <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider border-b border-slate-700 pb-2 flex items-center gap-2">
-                                <IconTelescope width={16} /> Observatory
-                            </h2>
-                            <div className="flex-grow">
+                        {/* OBSERVATORY */}
+                        <div key="obs" className="bg-[#1f2833] rounded-xl shadow-lg border border-slate-700 flex flex-col overflow-hidden">
+                             <div className="p-2 border-b border-slate-700 flex items-center justify-between bg-slate-800/50 drag-handle cursor-move">
+                                <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <IconTelescope width={16} /> Observatory
+                                </h2>
+                            </div>
+                            <div className="flex-grow p-2 overflow-auto">
                                 <ObservationDeck currentDay={currentDay} />
-                            </div>
-                            <div className="text-[10px] text-slate-500 mt-2 italic">
-                                *Brightness calc based on Albedo & Distance relative to Terrax.
+                                <div className="text-[10px] text-slate-500 mt-2 italic px-2">
+                                    *Relative Brightness calc.
+                                </div>
                             </div>
                         </div>
 
-                        {/* Row 2: Rotation and Moons */}
-
-                        {/* Module 2: Planet Surface */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
-                             <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
-                                <IconClock width={16} /> Terrax Rotation
-                             </h2>
+                        {/* TERRAX ROTATION */}
+                        <div key="rot">
                              <PlanetRotationView currentDay={currentDay} timeOfDay={timeOfDay} />
-                             <div className="mt-4 text-xs text-center text-slate-400 px-4">
-                                {seasonInfo.description}
-                             </div>
                         </div>
 
-                        {/* Module 3: Moons */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
-                            <h2 className="text-sm font-bold text-white w-full mb-2 uppercase tracking-wider border-b border-slate-700 pb-2">Lunar System</h2>
-                            <PlanetaryOrrery currentDay={currentDay} />
-                            <div className="w-full space-y-2 mt-4">
-                                 <MoonPhaseDisplay 
-                                    moonName="Luna" 
-                                    phase={moonPhases.luna} 
-                                    period={TERRAX_SYSTEM.moons[0].orbitalPeriodDays}
-                                    color="#e2e8f0"
-                                />
-                                <MoonPhaseDisplay 
-                                    moonName="Echo" 
-                                    phase={moonPhases.echo} 
-                                    period={TERRAX_SYSTEM.moons[1].orbitalPeriodDays}
-                                    color="#94a3b8"
-                                />
+                        {/* LUNAR SYSTEM */}
+                        <div key="lunar" className="bg-[#1f2833] rounded-xl shadow-lg border border-slate-700 flex flex-col overflow-hidden">
+                             <div className="p-2 border-b border-slate-700 flex items-center justify-between bg-slate-800/50 drag-handle cursor-move">
+                                <h2 className="text-sm font-bold text-white uppercase tracking-wider">Lunar System</h2>
+                            </div>
+                            <div className="flex-grow flex flex-col items-center justify-center p-2">
+                                <PlanetaryOrrery currentDay={currentDay} />
+                                <div className="w-full space-y-2 mt-2 px-2">
+                                     <MoonPhaseDisplay 
+                                        moonName="Luna" 
+                                        phase={moonPhases.luna} 
+                                        period={TERRAX_SYSTEM.moons[0].orbitalPeriodDays}
+                                        color="#e2e8f0"
+                                    />
+                                    <MoonPhaseDisplay 
+                                        moonName="Echo" 
+                                        phase={moonPhases.echo} 
+                                        period={TERRAX_SYSTEM.moons[1].orbitalPeriodDays}
+                                        color="#94a3b8"
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Module 5: Environmental Chart (Full Width of column 2) */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2">
+                        {/* ENVIRONMENTAL CHART */}
+                        <div key="env">
                             <EnvironmentalChart currentDay={currentDay} isLeapYear={isLeapYear} />
                         </div>
 
-                    </div>
+                    </ResponsiveGridLayout>
                 </div>
             </div>
         ) : (

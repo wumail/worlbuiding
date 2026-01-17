@@ -6,6 +6,8 @@
     <title>Terrax System Observer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-grid-layout@1.4.4/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-resizable@3.0.5/css/styles.css">
     <style>
       body {
         font-family: 'Inter', sans-serif;
@@ -30,15 +32,41 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #66fcf1; 
       }
+      /* RGL Customization */
+      .react-grid-item {
+        transition: box-shadow 0.2s, transform 0.1s; 
+      }
+      .react-grid-item.react-grid-placeholder {
+        background: rgba(69, 162, 158, 0.3) !important;
+        border-radius: 0.75rem;
+        opacity: 0.5;
+      }
+      .react-resizable-handle {
+        background-image: none;
+        width: 20px;
+        height: 20px;
+      }
+      .react-resizable-handle::after {
+        content: "";
+        position: absolute;
+        right: 3px;
+        bottom: 3px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #45a29e;
+        border-bottom: 2px solid #45a29e;
+      }
     </style>
   <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "recharts": "https://esm.sh/recharts@^3.6.0"
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "lucide-react": "https://esm.sh/lucide-react@0.263.1?external=react",
+    "recharts": "https://esm.sh/recharts@2.12.0?external=react,react-dom",
+    "react-grid-layout": "https://esm.sh/react-grid-layout@1.4.4?external=react,react-dom"
   }
 }
 </script>
