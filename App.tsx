@@ -36,9 +36,9 @@ const DEFAULT_LAYOUTS = {
 
 export default function App() {
   const [currentDay, setCurrentDay] = useState<number>(1);
-  const [timeOfDay, setTimeOfDay] = useState<number>(14); 
+  const [timeOfDay, setTimeOfDay] = useState<number>(0); 
   const [isLeapYear, setIsLeapYear] = useState<boolean>(false);
-  const [latitude, setLatitude] = useState<number>(24); 
+  const [latitude, setLatitude] = useState<number>(0); 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'data'>('dashboard');
   
   // Animation/Simulation State
@@ -54,18 +54,23 @@ export default function App() {
       const delta = (now - lastUpdateRef.current) / 1000; // in seconds
       lastUpdateRef.current = now;
       
-      const speedMultiplier = simSpeed * 5;
+      const speedMultiplier = simSpeed * 5; // Reduced from 5 to 2
 
       // Requirement: Deep Space Monitor (simTime) runs automatically/independently
       setSimTime(prev => prev + (delta * speedMultiplier));
 
       if (isPlaying) {
-        // Local Calendar/Rotation Time only updates if isPlaying is true
-        setCurrentDay(prev => {
-          const total = isLeapYear ? 512 : 513;
-          let next = prev + (delta * speedMultiplier); 
-          if (next > total) next = 1;
-          return next;
+        // Time of day updates smoothly
+            setTimeOfDay(prev => {
+            const hours = delta * speedMultiplier;
+            let next = prev + hours;
+            setCurrentDay(prevDay => {
+                const total = isLeapYear ? 512 : 513;
+                let nextDay = prevDay + hours / 26;
+                if (nextDay > total) nextDay = nextDay % total;
+                return nextDay;
+            });
+            return next % 26; // Reset time to remainder
         });
       }
       
@@ -224,7 +229,7 @@ export default function App() {
                                     <Clock size={16} className="text-indigo-400" /> Time (Rot.)
                                 </label>
                                 <span className="px-3 py-1 bg-slate-900 rounded-full text-indigo-400 font-mono text-xs border border-slate-700">
-                                    {timeOfDay}:00 / 26h
+                                    {Math.ceil(timeOfDay)}:00 / 26h
                                 </span>
                             </div>
                             <input 

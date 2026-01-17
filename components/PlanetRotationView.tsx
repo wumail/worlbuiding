@@ -53,28 +53,25 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                             <circle cx={center} cy={center} r={r} />
                         </clipPath>
 
-                        <pattern id="landPattern" x={patternOffset} y="0" width="300" height="200" patternUnits="userSpaceOnUse">
-                            <rect width="300" height="200" fill="#0e7490" /> {/* Ocean */}
-                            {/* Continents */}
+                        {/* Arrow marker for rotation direction */}
+                        <marker id="rotationArrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                            <polygon points="0 0, 6 3, 0 6" fill="#66d9ef" />
+                        </marker>
+
+                        {/* <pattern id="landPattern" x={patternOffset} y="0" width="300" height="200" patternUnits="userSpaceOnUse">
+                            <rect width="300" height="200" fill="#0e7490" />
                             <path d="M 20 50 Q 50 20 80 50 T 140 80 T 50 150 Z" fill="#15803d" opacity="0.6" />
                             <path d="M 180 30 Q 220 10 250 40 T 280 120 T 200 160 Z" fill="#15803d" opacity="0.6" />
-                            <path d="M 100 100 Q 130 90 150 110" stroke="#fff" strokeWidth="2" fill="none" opacity="0.3" /> {/* Clouds */}
-                        </pattern>
-
-                        {/* Spherical Shading Gradient */}
-                        <radialGradient id="sphereShading" cx="35%" cy="35%" r="65%">
-                            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
-                            <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
-                            <stop offset="100%" stopColor="#000000" stopOpacity="0.5" />
-                        </radialGradient>
+                            <path d="M 100 100 Q 130 90 150 110" stroke="#fff" strokeWidth="2" fill="none" opacity="0.3" /> 
+                        </pattern> */}
 
                         {/* Pressure Belts Gradient (Subtle Overlay) */}
                         <linearGradient id="pressureBelts" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.2" /> 
-                            <stop offset="15%" stopColor="#3b82f6" stopOpacity="0.05" />
-                            <stop offset="50%" stopColor="#ef4444" stopOpacity="0.1" />
-                            <stop offset="85%" stopColor="#3b82f6" stopOpacity="0.05" />
-                            <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.2" />
+                            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="1" /> 
+                            <stop offset="15%" stopColor="#3b82f6" stopOpacity="0.1" />
+                            <stop offset="50%" stopColor="#ef4444" stopOpacity="0.7" />
+                            <stop offset="85%" stopColor="#3b82f6" stopOpacity="0.1" />
+                            <stop offset="100%" stopColor="#1e3a8a" stopOpacity="1" />
                         </linearGradient>
 
                         <filter id="glow">
@@ -156,7 +153,7 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                                     strokeWidth="0.5" 
                                 />
                             ))}
-                            {/* Meridians (Rotating) */}
+                            {/* Meridians (Rotating)
                             {meridians.map(m => {
                                 const angle = (m + rotationProgress) % 360;
                                 const isFront = angle > 90 && angle < 270;
@@ -173,7 +170,7 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                                         strokeWidth="0.3" 
                                     />
                                 );
-                            })}
+                            })} */}
                         </g>
 
                         {/* Prime Meridian Indicator - Red Line */}
@@ -229,15 +226,20 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                         })()}
 
                         {/* Observer Marker */}
-                        <circle 
-                            cx={center} 
-                            cy={ latitude >= 0 ? center - (r * Math.sin(latitude * Math.PI / 180)) - 5 : center - (r * Math.sin(latitude * Math.PI / 180)) + 5 } 
-                            r="3.5" 
-                            fill="#ef4444" 
-                            stroke="#fff" 
-                            strokeWidth="1.5" 
-                            filter="url(#glow)"
-                        />
+                        {(() => {
+                            const cy = center - (r * Math.sin(latitude * Math.PI / 180));
+                            return (
+                                <circle 
+                                    cx={center} 
+                                    cy={ latitude >= 0 ? cy - 5 : cy + 5 } 
+                                    r="3.5" 
+                                    fill="#ef4444" 
+                                    stroke="#fff" 
+                                    strokeWidth="1.5" 
+                                    filter="url(#glow)"
+                                />
+                            )
+                        })()}
                         {/* Equatorial Plane - Draw on top */}
                         <ellipse cx={center} cy={center} rx={r + 30} ry={5} fill="none" stroke="#fcd34d" strokeWidth="0.5" opacity="0.4" />
                         <line x1={center - r - 30} y1={center} x2={center + r + 30} y2={center} stroke="#fcd34d" strokeWidth="1" opacity="0.4" />
@@ -253,6 +255,20 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                             strokeDasharray="5 3" 
                             opacity="0.6"
                         />
+                        
+                        {/* Rotation Direction Indicator - Circular arrows around north pole */}
+                        <g transform={`translate(${center}, ${center - r - 50}) rotate(${rotationProgress})`}>
+                            {/* Single curved arrow showing counter-clockwise rotation */}
+                            <path
+                                d="M 20 0 A 20 20 0 0 1 0 20"
+                                fill="none"
+                                stroke="#66d9ef"
+                                strokeWidth="2"
+                                markerEnd="url(#rotationArrow)"
+                                opacity="0.8"
+                            />
+                        </g>
+                        
                         {/* North Pole Marker */}
                         <circle 
                             cx={center} 
