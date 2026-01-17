@@ -44,7 +44,10 @@ export interface Moon extends CelestialBody {
     radiusRelative: number; // Relative to Luna
     isLocked: boolean;
     eccentricity: number;
-    periapsisArgument: number; // degrees
+    inclination?: number; // Orbital inclination in degrees
+    periapsisKm?: number; // Distance at closest approach
+    apoapsisKm?: number; // Distance at furthest approach
+    periapsisArgument: number; // Argument of periapsis in degrees
 }
 
 export interface CalendarMonth {

@@ -97,28 +97,32 @@ export const TERRAX_SYSTEM: SystemData = {
             radiusKm: 2415.20,
             massKg: 2.205E+23,
             color: '#e0e0e0',
-            albedo: 0.12,
+            albedo: 0.26,
             semiMajorAxisKm: 556200,
-            orbitalPeriodDays: 39.213, // Synodic
+            orbitalPeriodDays: 39.213, // Synodic (42.481 Earth days)
             radiusRelative: 1.0,
             isLocked: true,
             eccentricity: 0.055,
-            periapsisArgument: -45
+            inclination: 4.172,
+            periapsisKm: 525609,
+            apoapsisKm: 586791,
+            periapsisArgument: 0
         },
         {
             name: 'Echo',
             radiusKm: 888.18,
             massKg: 9.555E+21,
             color: '#a3a3a3',
-            albedo: 0.09,
-            // Adjusted semi-major axis to obey Kepler's 3rd Law relative to Luna
-            // (72.79/39.213)^2 = (a/556200)^3 => a approx 839,800 km
-            semiMajorAxisKm: 839800, 
-            orbitalPeriodDays: 72.79, // Synodic from YAML
+            albedo: 0.37,
+            semiMajorAxisKm: 801315,
+            orbitalPeriodDays: 72.79, // Synodic (78.86 Earth days)
             radiusRelative: 0.24,
             isLocked: true,
-            eccentricity: 0.12,
-            periapsisArgument: 135
+            eccentricity: 0.065,
+            inclination: 7.2,
+            periapsisKm: 749230,
+            apoapsisKm: 853400,
+            periapsisArgument: 0
         }
     ],
     calendar: {

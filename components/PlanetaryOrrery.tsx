@@ -170,7 +170,7 @@ export const PlanetaryOrrery: React.FC<PlanetaryOrreryProps> = ({ currentDay }) 
                     <text x={CENTER} y={SIZE + 35} textAnchor="middle" fill="#fcd34d" fontSize="10">TO SOL</text>
                 </svg>
              </div>
-             <div className="mt-4 text-center text-sm text-slate-400">
+             <div className="mt-4 text-center text-sm text-slate-400 " style={{ marginTop: '50px' }}>
                 <p>Keplerian Orbital Mechanics</p>
                 <div className="flex justify-center gap-4 text-[10px] text-slate-600 font-mono mt-1">
                     <span>e={luna.eccentricity}</span>

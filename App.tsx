@@ -15,22 +15,22 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DEFAULT_LAYOUTS = {
   lg: [
-    { i: 'rot', x: 0, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
-    { i: 'lunar', x: 6, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
-    { i: 'env', x: 0, y: 7, w: 12, h: 7, minW: 6, minH: 6 },
-    { i: 'system-monitor', x: 0, y: 14, w: 12, h: 12, minW: 8, minH: 8 },
+    { i: 'rot', x: 0, y: 0, w: 6, h: 10, minW: 4, minH: 6 },
+    { i: 'lunar', x: 6, y: 0, w: 6, h: 10, minW: 4, minH: 6 },
+    { i: 'env', x: 0, y: 9, w: 12, h: 7, minW: 6, minH: 6 },
+    { i: 'system-monitor', x: 0, y: 16, w: 12, h: 12, minW: 8, minH: 8 },
   ],
   md: [
-    { i: 'rot', x: 0, y: 0, w: 5, h: 7, minW: 4, minH: 6 },
-    { i: 'lunar', x: 5, y: 0, w: 5, h: 7, minW: 4, minH: 6 },
-    { i: 'env', x: 0, y: 7, w: 10, h: 7, minW: 6, minH: 6 },
-    { i: 'system-monitor', x: 0, y: 14, w: 10, h: 12, minW: 8, minH: 8 },
+    { i: 'rot', x: 0, y: 0, w: 5, h: 10, minW: 4, minH: 6 },
+    { i: 'lunar', x: 5, y: 0, w: 5, h: 10, minW: 4, minH: 6 },
+    { i: 'env', x: 0, y: 9, w: 10, h: 7, minW: 6, minH: 6 },
+    { i: 'system-monitor', x: 0, y: 16, w: 10, h: 12, minW: 8, minH: 8 },
   ],
   sm: [
-    { i: 'rot', x: 0, y: 0, w: 6, h: 6 },
-    { i: 'lunar', x: 0, y: 6, w: 6, h: 6 },
-    { i: 'env', x: 0, y: 12, w: 6, h: 7 },
-    { i: 'system-monitor', x: 0, y: 19, w: 6, h: 14 },
+    { i: 'rot', x: 0, y: 0, w: 6, h: 8 },
+    { i: 'lunar', x: 0, y: 8, w: 6, h: 8 },
+    { i: 'env', x: 0, y: 16, w: 6, h: 7 },
+    { i: 'system-monitor', x: 0, y: 23, w: 6, h: 14 },
   ]
 };
 
@@ -100,10 +100,55 @@ export default function App() {
   }, [currentDay]);
 
   const moonPhases = React.useMemo(() => {
-      const getPhase = (period: number) => ((currentDay / period) + 0.5) % 1.0;
+      // Kepler solver for eccentric anomaly
+      const solveKepler = (M: number, e: number): number => {
+          let E = M;
+          for (let i = 0; i < 4; i++) {
+              E = M + e * Math.sin(E);
+          }
+          return E;
+      };
+
+      // Calculate moon phase based on true orbital position
+      const getMoonPhase = (moon: typeof TERRAX_SYSTEM.moons[0]) => {
+          // Mean anomaly
+          const M = (currentDay / moon.orbitalPeriodDays) * 2 * Math.PI;
+          
+          // Eccentric anomaly
+          const E = solveKepler(M, moon.eccentricity);
+          
+          // True anomaly
+          const trueAnomaly = 2 * Math.atan2(
+              Math.sqrt(1 + moon.eccentricity) * Math.sin(E / 2),
+              Math.sqrt(1 - moon.eccentricity) * Math.cos(E / 2)
+          );
+          
+          // Moon's position angle in its orbit (including periapsis argument)
+          const moonAngle = trueAnomaly + (moon.periapsisArgument * Math.PI / 180);
+          
+          // In the orrery view, sun is at the bottom (pointing down = 90° or π/2 in math coords)
+          // In standard math coordinates: 0° = right, 90° = up, 180° = left, 270° = down
+          // But in SVG: y increases downward, so 90° in math = -90° in SVG = up
+          // 270° in math = down in SVG
+          // Sun direction is at bottom of view = 270° = 3π/2 radians
+          const sunDirection = Math.PI / 2; // 90° = top (opposite of bottom where sun indicator is)
+          
+          // Phase angle: angle between moon position and sun direction
+          // When moon is at bottom (same side as sun) = new moon (phase 0)
+          // When moon is at top (opposite side from sun) = full moon (phase 0.5)
+          let phaseAngle = moonAngle - sunDirection;
+          
+          // Normalize to 0-2π
+          phaseAngle = ((phaseAngle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+          
+          // Convert to 0-1 range where:
+          // 0 = new moon, 0.5 = full moon, 1 = new moon again
+          return phaseAngle / (2 * Math.PI);
+      };
+      
       return {
-          luna: getPhase(TERRAX_SYSTEM.moons[0].orbitalPeriodDays),
-          echo: getPhase(TERRAX_SYSTEM.moons[1].orbitalPeriodDays)
+          luna: getMoonPhase(TERRAX_SYSTEM.moons[0]),
+          echo: getMoonPhase(TERRAX_SYSTEM.moons[1])
       };
   }, [currentDay]);
 

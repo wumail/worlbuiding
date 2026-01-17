@@ -7,7 +7,7 @@ interface SystemOrbitViewProps {
 
 export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ simTime }) => {
     // Canvas size
-    const size = 500;
+    const size = 600;
     const center = size / 2;
     // Requirement 2: Reduced Sun radius to prevent overlap
     const sunRadius = 10;
