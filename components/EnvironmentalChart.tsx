@@ -53,10 +53,10 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
     const currentPoint = data.find(p => p.day >= currentDay) || data[data.length - 1];
 
     return (
-        <div className="h-64 w-full bg-slate-900/50 rounded-lg p-4 border border-slate-800">
-            <h4 className="text-sm font-semibold text-slate-400 mb-4">Environmental Cycles (Annual)</h4>
-            <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
+        <div className="h-96 w-full bg-slate-900/50 rounded-lg p-6 border border-slate-800">
+            <h4 className="text-sm font-semibold text-slate-400 mb-6">Environmental Cycles (Annual)</h4>
+            <ResponsiveContainer width="100%" height="85%">
+                <AreaChart data={data} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorDaylight" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#fcd34d" stopOpacity={0.3}/>
@@ -67,14 +67,14 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
                             <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                         </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
                     <XAxis 
                         dataKey="day" 
                         stroke="#64748b" 
-                        tick={{fontSize: 10}}
-                        label={{ value: 'Day of Year', position: 'insideBottomRight', offset: -5, fill: '#64748b', fontSize: 10 }}
+                        tick={{fontSize: 11}}
+                        label={{ value: 'Day of Year', position: 'insideBottomRight', offset: -5, fill: '#64748b', fontSize: 11 }}
                     />
-                    <YAxis stroke="#64748b" tick={{fontSize: 10}} />
+                    <YAxis stroke="#64748b" tick={{fontSize: 11}} />
                     <Tooltip 
                         contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', fontSize: '12px' }}
                         itemStyle={{ padding: 0 }}
@@ -88,6 +88,7 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
                         fillOpacity={1} 
                         fill="url(#colorDaylight)" 
                         name="Daylight Hours"
+                        strokeWidth={2}
                     />
                     <Area 
                         type="monotone" 
@@ -96,12 +97,13 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
                         fillOpacity={1} 
                         fill="url(#colorTide)" 
                         name="Tidal Force (Rel)" 
+                        strokeWidth={2}
                     />
                 </AreaChart>
             </ResponsiveContainer>
-            <div className="flex justify-between text-xs mt-2 px-2">
-                <span className="text-yellow-500">Daylight: {currentPoint?.daylight}h</span>
-                <span className="text-cyan-400">Tide Intensity: {(currentPoint?.tide * 100).toFixed(0)}%</span>
+            <div className="flex justify-between text-xs mt-2 px-2 border-t border-slate-800 pt-3">
+                <span className="text-yellow-500 font-mono">Daylight: <span className="text-white text-sm">{currentPoint?.daylight}h</span></span>
+                <span className="text-cyan-400 font-mono">Tide Intensity: <span className="text-white text-sm">{(currentPoint?.tide * 100).toFixed(0)}%</span></span>
             </div>
         </div>
     );

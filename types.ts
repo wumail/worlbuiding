@@ -9,6 +9,7 @@ export interface CelestialBody {
     radiusKm: number;
     massKg?: number;
     color: string;
+    albedo: number; // 0 to 1 reflectivity
 }
 
 export interface Star extends CelestialBody {
@@ -30,6 +31,12 @@ export interface Planet extends CelestialBody {
     };
 }
 
+export interface NeighborPlanet extends CelestialBody {
+    semiMajorAxisAU: number;
+    orbitalPeriodDays: number; // Approximate Earth Days for calc
+    type: 'Rocky' | 'Gas Giant' | 'Ice Giant';
+}
+
 export interface Moon extends CelestialBody {
     semiMajorAxisKm: number;
     orbitalPeriodDays: number; // Synodic
@@ -47,6 +54,7 @@ export interface CalendarMonth {
 export interface SystemData {
     star: Star;
     planet: Planet;
+    neighbors: NeighborPlanet[];
     moons: Moon[];
     calendar: {
         months: CalendarMonth[];

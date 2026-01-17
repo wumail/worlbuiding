@@ -6,81 +6,94 @@ interface SystemOrbitViewProps {
 }
 
 export const SystemOrbitView: React.FC<SystemOrbitViewProps> = ({ currentDay }) => {
-    const size = 300;
+    // Increased Scale
+    const size = 500;
     const center = size / 2;
-    const radius = 100;
-    const sunRadius = 15;
-    const planetRadius = 6;
+    const sunRadius = 18;
 
-    const yearLength = TERRAX_SYSTEM.planet.orbitalPeriodLocalDays;
-    
-    // Angle in radians. -PI/2 is top (Spring Equinox start? Usually Vernal Equinox is taken as 0 or start).
-    // Let's assume Day 1 is Vernal Equinox (Top).
-    // Orbit is counter-clockwise.
-    const angle = ((currentDay / yearLength) * 2 * Math.PI) - (Math.PI / 2);
-    
-    const planetX = center + radius * Math.cos(angle);
-    const planetY = center + radius * Math.sin(angle);
-
-    // Season Arcs
-    const seasonOffset = -Math.PI / 2;
-    const seasons = [
-        { name: 'Spring', color: '#a7f3d0', start: 0, end: 0.25 },
-        { name: 'Summer', color: '#fde047', start: 0.25, end: 0.5 },
-        { name: 'Autumn', color: '#fdba74', start: 0.5, end: 0.75 },
-        { name: 'Winter', color: '#93c5fd', start: 0.75, end: 1.0 },
-    ];
-
-    const getArcPath = (startPct: number, endPct: number) => {
-        const startAngle = (startPct * 2 * Math.PI) + seasonOffset;
-        const endAngle = (endPct * 2 * Math.PI) + seasonOffset;
-        
-        const x1 = center + radius * Math.cos(startAngle);
-        const y1 = center + radius * Math.sin(startAngle);
-        const x2 = center + radius * Math.cos(endAngle);
-        const y2 = center + radius * Math.sin(endAngle);
-        
-        const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
-        
-        return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`;
+    // We need to compress the vast distances (0.39 AU to 30 AU) into 300px
+    // Logarithmic scale helps visualize inner and outer planets simultaneously
+    // Map function: r = Scale * log(AU + Shift)
+    const scaleOrbit = (au: number) => {
+        const minAu = 0.2; // Avoid log(0) issues
+        const maxLog = Math.log(35); // Neptune is 30
+        const availRadius = (size / 2) - 40; // Padding
+        return (Math.log(au + minAu) / maxLog) * availRadius + 25; // +offset from sun
     };
 
+    // Helper to calc position
+    const getPlanetPos = (au: number, periodDays: number, day: number) => {
+        // Assume all start at -PI/2 (Top) at Day 0
+        const angle = ((day / periodDays) * 2 * Math.PI) - (Math.PI / 2);
+        const r = scaleOrbit(au);
+        return {
+            x: center + r * Math.cos(angle),
+            y: center + r * Math.sin(angle),
+            r,
+            angle // for z-index or debug
+        };
+    };
+
+    // Terrax Year in Earth Days approx for sync (512 Local * 26h / 24h)
+    // Roughly 555 Earth days.
+    const terraxEarthDays = TERRAX_SYSTEM.planet.orbitalPeriodLocalDays * (TERRAX_SYSTEM.planet.rotationPeriodHours / 24);
+    
+    // Terrax Position
+    const terraxPos = getPlanetPos(TERRAX_SYSTEM.planet.semiMajorAxisAU, terraxEarthDays, currentDay);
+
+    // Neighbors Positions
+    const neighborPositions = TERRAX_SYSTEM.neighbors.map(p => ({
+        ...p,
+        pos: getPlanetPos(p.semiMajorAxisAU, p.orbitalPeriodDays, currentDay)
+    }));
+
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full overflow-hidden">
             <div className="relative" style={{ width: size, height: size }}>
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                    {/* Orbit Path Segments (Seasons) */}
-                    {seasons.map((season, i) => (
-                        <path 
-                            key={season.name}
-                            d={getArcPath(season.start, season.end)}
-                            fill="none"
-                            stroke={season.color}
-                            strokeWidth="4"
-                            opacity="0.6"
-                        />
+                    
+                    {/* Star (Sol) */}
+                    <circle cx={center} cy={center} r={sunRadius} fill="#fbbf24" filter="drop-shadow(0 0 20px rgba(251, 191, 36, 0.7))" />
+                    
+                    {/* Neighbors */}
+                    {neighborPositions.map((p) => (
+                        <g key={p.name}>
+                            {/* Orbit Line */}
+                            <circle cx={center} cy={center} r={p.pos.r} fill="none" stroke="#334155" strokeWidth="1" opacity="0.3" strokeDasharray="3 3"/>
+                            {/* Planet Body */}
+                            <circle 
+                                cx={p.pos.x} 
+                                cy={p.pos.y} 
+                                r={p.type === 'Gas Giant' ? 8 : p.type === 'Ice Giant' ? 6 : 3.5} 
+                                fill={p.color} 
+                                stroke="#0b0c10"
+                                strokeWidth="1"
+                            />
+                            {/* Hover Label (Simplified as fixed text for key planets) */}
+                            {['Jove', 'Saturnus'].includes(p.name.split(' ')[0]) && (
+                                <text x={p.pos.x + 10} y={p.pos.y} fontSize="11" fill={p.color} opacity="0.8" fontWeight="bold">{p.name[0]}</text>
+                            )}
+                        </g>
                     ))}
 
-                    {/* Star (Sol) */}
-                    <circle cx={center} cy={center} r={sunRadius} fill="#fbbf24" filter="drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))" />
-                    <text x={center} y={center + 4} textAnchor="middle" fontSize="10" fontWeight="bold" fill="#78350f">SOL</text>
-
-                    {/* Planet (Terrax) */}
-                    <circle cx={planetX} cy={planetY} r={planetRadius} fill="#22d3ee" stroke="#000" strokeWidth="1" />
-
-                    {/* Radial Line to Planet */}
-                    <line x1={center} y1={center} x2={planetX} y2={planetY} stroke="#fff" strokeOpacity="0.1" strokeDasharray="4 4" />
-
-                    {/* Season Labels */}
-                    <text x={center} y={center - radius - 15} textAnchor="middle" fill="#a7f3d0" fontSize="10" opacity="0.8">SPRING</text>
-                    <text x={center + radius + 25} y={center} textAnchor="middle" fill="#fde047" fontSize="10" opacity="0.8">SUMMER</text>
-                    <text x={center} y={center + radius + 20} textAnchor="middle" fill="#fdba74" fontSize="10" opacity="0.8">AUTUMN</text>
-                    <text x={center - radius - 25} y={center} textAnchor="middle" fill="#93c5fd" fontSize="10" opacity="0.8">WINTER</text>
-
+                    {/* Terrax Orbit */}
+                    <circle cx={center} cy={center} r={terraxPos.r} fill="none" stroke="#45a29e" strokeWidth="2" opacity="0.5" />
+                    {/* Terrax Body */}
+                    <circle cx={terraxPos.x} cy={terraxPos.y} r={6} fill="#22d3ee" stroke="#fff" strokeWidth="1.5" />
+                    <text x={terraxPos.x + 10} y={terraxPos.y} fontSize="12" fill="#22d3ee" fontWeight="bold">Terrax</text>
+                    
+                    {/* Labels for Reference */}
+                    <text x={center} y={size - 10} textAnchor="middle" fill="#475569" fontSize="10">Logarithmic Scale (0.39 AU - 30 AU)</text>
                 </svg>
             </div>
-            <div className="mt-2 text-center text-xs text-slate-500">
-                Helio-centric View • Counter-clockwise Orbit
+            <div className="flex flex-wrap justify-center gap-3 mt-4 px-2 bg-slate-900/50 p-2 rounded-full border border-slate-800">
+                <span className="flex items-center text-[10px] text-slate-300 gap-1.5"><span className="w-2 h-2 rounded-full bg-cyan-400"></span>Terrax</span>
+                {neighborPositions.map(n => (
+                    <span key={n.name} className="flex items-center text-[10px] text-slate-400 gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: n.color}}></span>
+                        {n.name.split(' ')[0]}
+                    </span>
+                ))}
             </div>
         </div>
     );
