@@ -172,15 +172,32 @@ export default function App() {
                     {/* Grid Container for Automatic Line Wrapping of Visual Modules */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
-                        {/* Module 1: System Map - Magnified */}
-                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center md:col-span-2 overflow-hidden">
+                        {/* Row 1: Helio-System (Left) and Observatory (Right) */}
+                        
+                        {/* Module 1: System Map */}
+                        <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
                             <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
                                 <IconGlobe width={16} /> Helio-System
                             </h2>
                             <SystemOrbitView currentDay={currentDay} />
                         </div>
 
-                        {/* Module 2: Planet Surface - Enhanced */}
+                         {/* Module 4: Planetary Observations (Moved here) */}
+                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 overflow-x-auto flex flex-col">
+                            <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider border-b border-slate-700 pb-2 flex items-center gap-2">
+                                <IconTelescope width={16} /> Observatory
+                            </h2>
+                            <div className="flex-grow">
+                                <ObservationDeck currentDay={currentDay} />
+                            </div>
+                            <div className="text-[10px] text-slate-500 mt-2 italic">
+                                *Brightness calc based on Albedo & Distance relative to Terrax.
+                            </div>
+                        </div>
+
+                        {/* Row 2: Rotation and Moons */}
+
+                        {/* Module 2: Planet Surface */}
                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center overflow-hidden">
                              <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider w-full border-b border-slate-700 pb-2 flex items-center gap-2">
                                 <IconClock width={16} /> Terrax Rotation
@@ -211,20 +228,9 @@ export default function App() {
                             </div>
                         </div>
 
-                         {/* Module 4: Planetary Observations */}
-                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2 overflow-x-auto">
-                            <h2 className="text-sm font-bold text-white mb-2 uppercase tracking-wider border-b border-slate-700 pb-2 flex items-center gap-2">
-                                <IconTelescope width={16} /> Observatory
-                            </h2>
-                            <ObservationDeck currentDay={currentDay} />
-                            <div className="text-[10px] text-slate-500 mt-2 italic">
-                                *Brightness calc based on Albedo & Distance relative to Terrax.
-                            </div>
-                        </div>
-
-                        {/* Module 5: Environmental Chart (Widened by placement) */}
+                        {/* Module 5: Environmental Chart (Full Width of column 2) */}
                         <div className="bg-[#1f2833] p-4 rounded-xl shadow-lg border border-slate-700 md:col-span-2">
-                            <EnvironmentalChart currentDay={currentDay} />
+                            <EnvironmentalChart currentDay={currentDay} isLeapYear={isLeapYear} />
                         </div>
 
                     </div>

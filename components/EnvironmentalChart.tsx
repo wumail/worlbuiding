@@ -13,13 +13,14 @@ import { TERRAX_SYSTEM } from '../constants';
 
 interface EnvironmentalChartProps {
     currentDay: number;
+    isLeapYear?: boolean;
 }
 
-export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentDay }) => {
+export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentDay, isLeapYear = false }) => {
     // Generate data points for the year
     const data = React.useMemo(() => {
         const points = [];
-        const yearLength = 513; 
+        const yearLength = isLeapYear ? 512 : 513; 
         const axialTiltRad = (TERRAX_SYSTEM.planet.axialTilt * Math.PI) / 180;
         
         // Moon periods
@@ -43,7 +44,7 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
             });
         }
         return points;
-    }, []);
+    }, [isLeapYear]);
 
     // Calculate current specific values
     const currentPoint = data.find(p => p.day >= currentDay) || data[data.length - 1];
@@ -58,10 +59,10 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
                 </div>
             </div>
             
-            {/* Height is defined here, width follows container */}
             <div className="h-64 md:h-80 w-full">
+                {/* Added margin to bottom/right to prevent labels being clipped */}
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                    <AreaChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                         <defs>
                             <linearGradient id="colorDaylight" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#fcd34d" stopOpacity={0.3}/>
@@ -84,7 +85,14 @@ export const EnvironmentalChart: React.FC<EnvironmentalChartProps> = ({ currentD
                             contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', fontSize: '12px' }}
                             itemStyle={{ padding: 0 }}
                         />
-                        <ReferenceLine x={currentDay} stroke="#ef4444" strokeDasharray="3 3" label={{ position: 'top', value: 'NOW', fill: '#ef4444', fontSize: 10 }} />
+                        {/* Thicker, more obvious reference line for better drag syncing visibility */}
+                        <ReferenceLine 
+                            x={currentDay} 
+                            stroke="#ef4444" 
+                            strokeWidth={2}
+                            strokeDasharray="3 3" 
+                            label={{ position: 'top', value: 'NOW', fill: '#ef4444', fontSize: 10, fontWeight: 'bold' }} 
+                        />
                         
                         <Area 
                             type="monotone" 
