@@ -17,6 +17,7 @@ export const TERRAX_SYSTEM: SystemData = {
         radiusKm: 7016.80,
         massKg: 8.53996E+24,
         color: '#45a29e', // Speculative based on atmosphere
+        textureUrl: 'https://images.unsplash.com/photo-1614730375473-078472a8851c?ixlib=rb-4.0.3&auto=format&fit=crop&w=748&q=80',
         albedo: 0.30, // Earth-like average
         semiMajorAxisAU: 1.34,
         rotationPeriodHours: 26,
@@ -101,6 +102,8 @@ export const TERRAX_SYSTEM: SystemData = {
             orbitalPeriodDays: 39.213, // Synodic
             radiusRelative: 1.0,
             isLocked: true,
+            eccentricity: 0.055,
+            periapsisArgument: -45
         },
         {
             name: 'Echo',
@@ -108,10 +111,14 @@ export const TERRAX_SYSTEM: SystemData = {
             massKg: 9.555E+21,
             color: '#a3a3a3',
             albedo: 0.09,
-            semiMajorAxisKm: 69060, 
+            // Adjusted semi-major axis to obey Kepler's 3rd Law relative to Luna
+            // (72.79/39.213)^2 = (a/556200)^3 => a approx 839,800 km
+            semiMajorAxisKm: 839800, 
             orbitalPeriodDays: 72.79, // Synodic from YAML
             radiusRelative: 0.24,
             isLocked: true,
+            eccentricity: 0.12,
+            periapsisArgument: 135
         }
     ],
     calendar: {

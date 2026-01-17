@@ -25,6 +25,7 @@ export interface Planet extends CelestialBody {
     orbitalPeriodLocalDays: number;
     axialTilt: number;
     gravityG: number;
+    textureUrl?: string;
     atmosphere: {
         pressureAtm: number;
         composition: { gas: string; percent: number }[];
@@ -42,6 +43,8 @@ export interface Moon extends CelestialBody {
     orbitalPeriodDays: number; // Synodic
     radiusRelative: number; // Relative to Luna
     isLocked: boolean;
+    eccentricity: number;
+    periapsisArgument: number; // degrees
 }
 
 export interface CalendarMonth {

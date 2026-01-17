@@ -49,18 +49,25 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                             <circle cx={center} cy={center} r={r} />
                         </clipPath>
                         
-                        <radialGradient id="planetSphere" cx="30%" cy="30%" r="70%">
-                            <stop offset="0%" stopColor="#45a29e" />
-                            <stop offset="100%" stopColor="#1f2833" />
-                        </radialGradient>
+                        {/* Use Texture if available, else Gradient */}
+                        {TERRAX_SYSTEM.planet.textureUrl ? (
+                            <pattern id="planetTexture" patternContentUnits="objectBoundingBox" width="1" height="1">
+                                <image href={TERRAX_SYSTEM.planet.textureUrl} x="0" y="0" width="1" height="1" preserveAspectRatio="none" />
+                            </pattern>
+                        ) : (
+                            <radialGradient id="planetSphere" cx="30%" cy="30%" r="70%">
+                                <stop offset="0%" stopColor="#45a29e" />
+                                <stop offset="100%" stopColor="#1f2833" />
+                            </radialGradient>
+                        )}
 
-                        {/* Pressure Belts Gradient */}
+                        {/* Pressure Belts Gradient (Subtle Overlay) */}
                         <linearGradient id="pressureBelts" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.3" /> 
-                            <stop offset="15%" stopColor="#3b82f6" stopOpacity="0.1" />
-                            <stop offset="50%" stopColor="#ef4444" stopOpacity="0.2" />
-                            <stop offset="85%" stopColor="#3b82f6" stopOpacity="0.1" />
-                            <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.3" />
+                            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.2" /> 
+                            <stop offset="15%" stopColor="#3b82f6" stopOpacity="0.05" />
+                            <stop offset="50%" stopColor="#ef4444" stopOpacity="0.1" />
+                            <stop offset="85%" stopColor="#3b82f6" stopOpacity="0.05" />
+                            <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.2" />
                         </linearGradient>
 
                         <filter id="glow">
@@ -82,10 +89,16 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                         <ellipse cx={center} cy={center} rx={r + 30} ry={5} fill="none" stroke="#fcd34d" strokeWidth="0.5" opacity="0.4" />
                         <line x1={center - r - 30} y1={center} x2={center + r + 30} y2={center} stroke="#fcd34d" strokeWidth="1" opacity="0.4" />
 
-                        {/* Planet Body Background */}
-                        <circle cx={center} cy={center} r={r} fill="url(#planetSphere)" filter="url(#glow)" />
+                        {/* Planet Body Background with Texture */}
+                        <circle 
+                            cx={center} 
+                            cy={center} 
+                            r={r} 
+                            fill={TERRAX_SYSTEM.planet.textureUrl ? "url(#planetTexture)" : "url(#planetSphere)"} 
+                            filter="url(#glow)" 
+                        />
                         
-                        {/* Climate Bands */}
+                        {/* Climate Bands Overlay */}
                         <circle cx={center} cy={center} r={r} fill="url(#pressureBelts)" clipPath="url(#planetClip)" />
 
                         {/* Graticule Lines (Grid) */}
@@ -152,7 +165,7 @@ export const PlanetRotationView: React.FC<PlanetRotationViewProps> = ({ currentD
                         <path 
                             d={`M ${center} ${center - r} A ${r} ${r} 0 0 1 ${center} ${center + r} L ${center + r} ${center + r} L ${center + r} ${center - r} Z`} 
                             fill="#000" 
-                            opacity="0.5" 
+                            opacity="0.6" 
                             clipPath="url(#planetClip)" 
                         />
                         {/* Subsolar Point Marker */}
