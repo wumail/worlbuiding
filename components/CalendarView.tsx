@@ -75,21 +75,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ currentDay, onDaySel
                         <button
                             key={month.id}
                             onClick={() => onDaySelect(startDay + 1)} // Jump to start of month
-                            className={`p-3 rounded border text-left transition-all ${
+                            className={`p-2.5 rounded border text-left transition-all overflow-hidden ${
                                 isCurrent 
                                     ? 'bg-cyan-900/40 border-cyan-500 ring-1 ring-cyan-500' 
                                     : 'bg-slate-800 border-slate-700 hover:border-slate-500'
                             }`}
                         >
-                            <div className="flex justify-between items-start mb-1">
+                            <div className="flex justify-between items-start mb-1 gap-1">
                                 <span className={`text-xs font-bold ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}`}>
                                     M{month.id}
                                 </span>
                                 {month.isLong && (
-                                    <span className="text-[10px] bg-slate-700 px-1 rounded text-slate-300">Long</span>
+                                    <span className="text-[9px] bg-slate-700 px-1 py-0.5 rounded text-slate-300 whitespace-nowrap shrink-0">L</span>
                                 )}
                             </div>
-                            <div className="text-xs text-slate-500">{month.days} Days</div>
+                            <div className="text-xs text-slate-500">{month.days}d</div>
                         </button>
                     );
                 })}
@@ -97,14 +97,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ currentDay, onDaySel
                 {/* Remainder Days Button */}
                 <button
                      onClick={() => onDaySelect(totalDaysInYear - activeRemainderDays + 1)}
-                     className={`p-3 rounded border text-left col-span-1 border-dashed ${
+                     className={`p-2.5 rounded border text-left col-span-1 border-dashed overflow-hidden ${
                         currentDateInfo.isRemainder
                             ? 'bg-purple-900/40 border-purple-500 ring-1 ring-purple-500' 
                             : 'bg-slate-800/30 border-slate-600 hover:border-slate-400'
                      }`}
                 >
-                    <div className="text-xs font-bold text-purple-400">Remainder</div>
-                    <div className="text-xs text-slate-500">{activeRemainderDays} Days</div>
+                    <div className="text-xs font-bold text-purple-400">Rem</div>
+                    <div className="text-xs text-slate-500">{activeRemainderDays}d</div>
                 </button>
             </div>
             
